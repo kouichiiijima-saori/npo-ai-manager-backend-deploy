@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.saori.npo.mapper.CharterArticleMapper">
+
+    <resultMap
+        id="charterArticleResultMap"
+        type="com.saori.npo.domain.CharterArticle">
+
+        <id property="id" column="id" />
+        <result property="organizationId" column="organization_id" />
+        <result property="articleNumber" column="article_number" />
+        <result property="title" column="title" />
+        <result property="content" column="content" />
+        <result property="createdAt" column="created_at" />
+        <result property="updatedAt" column="updated_at" />
+
+    </resultMap>
+
+    <select
+        id="findAll"
+        resultMap="charterArticleResultMap">
+
+        SELECT
+            *
+        FROM
+            charter_articles
+        ORDER BY
+            article_number ASC
+
+    </select>
+
+    <select
+        id="findById"
+        parameterType="long"
+        resultMap="charterArticleResultMap">
+
+        SELECT
+            *
+        FROM
+            charter_articles
+        WHERE
+            id = #{id}
+
+    </select>
+
+    <insert
+        id="insert"
+        parameterType="com.saori.npo.domain.CharterArticle"
+        useGeneratedKeys="true"
+        keyProperty="id">
+
+        INSERT INTO charter_articles (
+            organization_id,
+            article_number,
+            title,
+            content,
+            created_at,
+            updated_at
+        )
+        VALUES (
+            #{organizationId},
+            #{articleNumber},
+            #{title},
+            #{content},
+            NOW(),
+            NOW()
+        )
+
+    </insert>
+
+    <update
+        id="update"
+        parameterType="com.saori.npo.domain.CharterArticle">
+
+        UPDATE
+            charter_articles
+        SET
+            article_number = #{articleNumber},
+            title = #{title},
+            content = #{content},
+            updated_at = NOW()
+        WHERE
+            id = #{id}
+
+    </update>
+
+    <delete
+        id="deleteById"
+        parameterType="long">
+
+        DELETE FROM
+            charter_articles
+        WHERE
+            id = #{id}
+
+    </delete>
+
+</mapper>
