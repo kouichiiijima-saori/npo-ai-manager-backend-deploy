@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.saori.npo.mapper.OrganizationProfileMapper">
+
+    <resultMap
+        id="organizationProfileResultMap"
+        type="com.saori.npo.domain.OrganizationProfile">
+
+        <id
+            property="id"
+            column="id" />
+
+        <result
+            property="organizationName"
+            column="organization_name" />
+
+        <result
+            property="representativeName"
+            column="representative_name" />
+
+        <result
+            property="location"
+            column="location" />
+
+        <result
+            property="establishedDate"
+            column="established_date" />
+
+        <result
+            property="activityArea"
+            column="activity_area" />
+
+        <result
+            property="mission"
+            column="mission" />
+
+        <result
+            property="targetPeople"
+            column="target_people" />
+
+        <result
+            property="mainActivities"
+            column="main_activities" />
+
+        <result
+            property="createdAt"
+            column="created_at" />
+
+        <result
+            property="updatedAt"
+            column="updated_at" />
+
+    </resultMap>
+
+    <select
+        id="findById"
+        parameterType="long"
+        resultMap="organizationProfileResultMap">
+
+        SELECT
+            *
+        FROM
+            organization_profiles
+        WHERE
+            id = #{id}
+
+    </select>
+
+    <update
+        id="update"
+        parameterType="com.saori.npo.domain.OrganizationProfile">
+
+        UPDATE
+            organization_profiles
+        SET
+            organization_name = #{organizationName},
+            representative_name = #{representativeName},
+            location = #{location},
+            established_date = #{establishedDate},
+            activity_area = #{activityArea},
+            mission = #{mission},
+            target_people = #{targetPeople},
+            main_activities = #{mainActivities},
+            updated_at = NOW()
+        WHERE
+            id = #{id}
+
+    </update>
+
+</mapper>
