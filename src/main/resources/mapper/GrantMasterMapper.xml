@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.saori.npo.mapper.GrantMasterMapper">
+
+    <resultMap
+        id="grantMasterResultMap"
+        type="com.saori.npo.domain.GrantMaster">
+
+        <id property="id" column="id" />
+        <result property="fiscalYear" column="fiscal_year" />
+        <result property="title" column="title" />
+        <result property="provider" column="provider" />
+        <result property="applicationStartDate" column="application_start_date" />
+        <result property="applicationDeadline" column="application_deadline" />
+        <result property="maxGrantAmount" column="max_grant_amount" />
+        <result property="summary" column="summary" />
+        <result property="targetTheme" column="target_theme" />
+        <result property="targetProject" column="target_project" />
+        <result property="targetOrganization" column="target_organization" />
+        <result property="targetArea" column="target_area" />
+        <result property="requiredDocuments" column="required_documents" />
+        <result property="officialUrl" column="official_url" />
+        <result property="officialPdfName" column="official_pdf_name" />
+        <result property="createdAt" column="created_at" />
+        <result property="updatedAt" column="updated_at" />
+
+    </resultMap>
+
+    <select
+        id="findAll"
+        resultMap="grantMasterResultMap">
+
+        SELECT
+            *
+        FROM
+            grant_masters
+        ORDER BY
+            application_deadline ASC,
+            id ASC
+
+    </select>
+
+    <select
+        id="findById"
+        parameterType="long"
+        resultMap="grantMasterResultMap">
+
+        SELECT
+            *
+        FROM
+            grant_masters
+        WHERE
+            id = #{id}
+
+    </select>
+
+</mapper>
