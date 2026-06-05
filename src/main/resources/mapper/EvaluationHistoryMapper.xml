@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.saori.npo.mapper.EvaluationHistoryMapper">
+
+    <resultMap
+        id="evaluationHistoryResultMap"
+        type="com.saori.npo.domain.EvaluationHistory">
+
+        <id property="id" column="id" />
+        <result property="grantCaseId" column="grant_case_id" />
+        <result property="aiSuitability" column="ai_suitability" />
+        <result property="aiRecommendationLevel" column="ai_recommendation_level" />
+        <result property="aiReason" column="ai_reason" />
+        <result property="aiEvidence" column="ai_evidence" />
+        <result property="organizationSnapshot" column="organization_snapshot" />
+        <result property="charterSnapshot" column="charter_snapshot" />
+        <result property="activitySnapshot" column="activity_snapshot" />
+        <result property="grantSnapshot" column="grant_snapshot" />
+        <result property="aiRawResponse" column="ai_raw_response" />
+        <result property="evaluatedAt" column="evaluated_at" />
+
+    </resultMap>
+
+    <select
+        id="findAll"
+        resultMap="evaluationHistoryResultMap">
+
+        SELECT
+            *
+        FROM
+            evaluation_histories
+        ORDER BY
+            evaluated_at DESC,
+            id DESC
+
+    </select>
+
+    <select
+        id="findById"
+        parameterType="long"
+        resultMap="evaluationHistoryResultMap">
+
+        SELECT
+            *
+        FROM
+            evaluation_histories
+        WHERE
+            id = #{id}
+
+    </select>
+
+<insert
+    id="insert"
+    parameterType="com.saori.npo.domain.EvaluationHistory"
+    useGeneratedKeys="true"
+    keyProperty="id">
+
+    INSERT INTO evaluation_histories (
+        grant_case_id,
+        ai_suitability,
+        ai_recommendation_level,
+        ai_reason,
+        ai_evidence,
+        organization_snapshot,
+        charter_snapshot,
+        activity_snapshot,
+        grant_snapshot,
+        ai_raw_response,
+        evaluated_at
+    )
+    VALUES (
+        #{grantCaseId},
+        #{aiSuitability},
+        #{aiRecommendationLevel},
+        #{aiReason},
+        #{aiEvidence},
+        #{organizationSnapshot},
+        #{charterSnapshot},
+        #{activitySnapshot},
+        #{grantSnapshot},
+        #{aiRawResponse},
+        NOW()
+    )
+
+</insert>
+
+</mapper>

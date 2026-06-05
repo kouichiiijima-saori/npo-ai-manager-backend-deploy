@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.saori.npo.mapper.GrantCaseMapper">
+
+    <resultMap
+        id="grantCaseResultMap"
+        type="com.saori.npo.domain.GrantCase">
+
+        <id property="id" column="id" />
+        <result property="organizationId" column="organization_id" />
+        <result property="grantMasterId" column="grant_master_id" />
+        <result property="caseName" column="case_name" />
+        <result property="caseStage" column="case_stage" />
+        <result property="examinationStatus" column="examination_status" />
+        <result property="externalAuditStatus" column="external_audit_status" />
+        <result property="examinationMemo" column="examination_memo" />
+        <result property="nextAction" column="next_action" />
+        <result property="nextActionDueDate" column="next_action_due_date" />
+        <result property="archived" column="is_archived" />
+        <result property="archivedAt" column="archived_at" />
+        <result property="archiveReason" column="archive_reason" />
+        <result property="createdAt" column="created_at" />
+        <result property="updatedAt" column="updated_at" />
+
+    </resultMap>
+
+    <select
+        id="findAll"
+        resultMap="grantCaseResultMap">
+
+        SELECT
+            *
+        FROM
+            grant_cases
+        ORDER BY
+            updated_at DESC,
+            id DESC
+
+    </select>
+
+    <select
+        id="findById"
+        parameterType="long"
+        resultMap="grantCaseResultMap">
+
+        SELECT
+            *
+        FROM
+            grant_cases
+        WHERE
+            id = #{id}
+
+    </select>
+
+<insert
+    id="insert"
+    parameterType="com.saori.npo.domain.GrantCase"
+    useGeneratedKeys="true"
+    keyProperty="id">
+
+    INSERT INTO grant_cases (
+        organization_id,
+        grant_master_id,
+        case_name,
+        case_stage,
+        examination_status,
+        external_audit_status,
+        examination_memo,
+        next_action,
+        next_action_due_date,
+        is_archived,
+        created_at,
+        updated_at
+    )
+    VALUES (
+        #{organizationId},
+        #{grantMasterId},
+        #{caseName},
+        #{caseStage},
+        #{examinationStatus},
+        #{externalAuditStatus},
+        #{examinationMemo},
+        #{nextAction},
+        #{nextActionDueDate},
+        #{archived},
+        NOW(),
+        NOW()
+    )
+
+</insert>
+
+    <update
+        id="update"
+        parameterType="com.saori.npo.domain.GrantCase">
+
+        UPDATE
+            grant_cases
+        SET
+            case_name = #{caseName},
+            case_stage = #{caseStage},
+            examination_status = #{examinationStatus},
+            external_audit_status = #{externalAuditStatus},
+            examination_memo = #{examinationMemo},
+            next_action = #{nextAction},
+            next_action_due_date = #{nextActionDueDate},
+            is_archived = #{archived},
+            archive_reason = #{archiveReason},
+            updated_at = NOW()
+        WHERE
+            id = #{id}
+
+    </update>
+
+</mapper>

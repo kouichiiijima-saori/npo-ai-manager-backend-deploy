@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.saori.npo.mapper.GrantRequirementCheckMapper">
+
+    <resultMap
+        id="grantRequirementCheckResultMap"
+        type="com.saori.npo.domain.GrantRequirementCheck">
+
+        <id property="id" column="id" />
+        <result property="grantCaseId" column="grant_case_id" />
+        <result property="requirementName" column="requirement_name" />
+        <result property="targetFileName" column="target_file_name" />
+        <result property="checkStatus" column="check_status" />
+        <result property="checkMemo" column="check_memo" />
+        <result property="archived" column="is_archived" />
+        <result property="archivedAt" column="archived_at" />
+        <result property="archiveReason" column="archive_reason" />
+        <result property="createdAt" column="created_at" />
+        <result property="updatedAt" column="updated_at" />
+
+    </resultMap>
+
+    <select
+        id="findAll"
+        resultMap="grantRequirementCheckResultMap">
+
+        SELECT
+            *
+        FROM
+            grant_requirements_checks
+        ORDER BY
+            grant_case_id,
+            id
+
+    </select>
+
+    <select
+        id="findByGrantCaseId"
+        parameterType="long"
+        resultMap="grantRequirementCheckResultMap">
+
+        SELECT
+            *
+        FROM
+            grant_requirements_checks
+        WHERE
+            grant_case_id = #{grantCaseId}
+        ORDER BY
+            id
+
+    </select>
+
+    <select
+        id="findById"
+        parameterType="long"
+        resultMap="grantRequirementCheckResultMap">
+
+        SELECT
+            *
+        FROM
+            grant_requirements_checks
+        WHERE
+            id = #{id}
+
+    </select>
+
+    <insert
+        id="insert"
+        parameterType="com.saori.npo.domain.GrantRequirementCheck"
+        useGeneratedKeys="true"
+        keyProperty="id">
+
+        INSERT INTO grant_requirements_checks (
+            grant_case_id,
+            requirement_name,
+            target_file_name,
+            check_status,
+            check_memo,
+            is_archived,
+            created_at,
+            updated_at
+        )
+        VALUES (
+            #{grantCaseId},
+            #{requirementName},
+            #{targetFileName},
+            #{checkStatus},
+            #{checkMemo},
+            #{archived},
+            NOW(),
+            NOW()
+        )
+
+    </insert>
+
+    <update
+        id="update"
+        parameterType="com.saori.npo.domain.GrantRequirementCheck">
+
+        UPDATE
+            grant_requirements_checks
+        SET
+            check_status = #{checkStatus},
+            check_memo = #{checkMemo},
+            is_archived = #{archived},
+            archive_reason = #{archiveReason},
+            updated_at = NOW()
+        WHERE
+            id = #{id}
+
+    </update>
+
+</mapper>
