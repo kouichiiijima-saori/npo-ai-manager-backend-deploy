@@ -53,19 +53,45 @@ public class AiEvaluationService {
 
         String aiEvidence = buildAiEvidence(grantMaster);
 
-        GrantCase grantCase = new GrantCase();
-        grantCase.setOrganizationId(request.getOrganizationId());
-        grantCase.setGrantMasterId(request.getGrantMasterId());
-        grantCase.setCaseName(grantMaster.getTitle());
-        grantCase.setCaseStage("APPLY_PREPARATION");
-        grantCase.setExaminationStatus("UNCONFIRMED");
-        grantCase.setExternalAuditStatus("NO_RESPONSE");
-        grantCase.setExaminationMemo("AI判定結果をもとに確認してください。");
-        grantCase.setNextAction("応募要件と提出書類を確認する");
-        grantCase.setNextActionDueDate(grantMaster.getApplicationDeadline());
-        grantCase.setArchived(false);
+        GrantCase existingGrantCase = null;
 
-        grantCaseMapper.insert(grantCase);
+        if (request.getGrantCaseId() != null) {
+
+            existingGrantCase = grantCaseMapper.findById(
+                    request.getGrantCaseId());
+
+        } else {
+
+            existingGrantCase =
+                    grantCaseMapper.findByOrganizationIdAndGrantMasterId(
+                            request.getOrganizationId(),
+                            request.getGrantMasterId());
+        }
+
+        GrantCase grantCase;
+
+        if (existingGrantCase != null) {
+
+            grantCase = existingGrantCase;
+
+        } else {
+
+            grantCase = new GrantCase();
+            grantCase.setOrganizationId(request.getOrganizationId());
+            grantCase.setGrantMasterId(request.getGrantMasterId());
+            grantCase.setCaseName(grantMaster.getTitle());
+            grantCase.setCaseStage("APPLY_PREPARATION");
+            grantCase.setExaminationStatus("UNCONFIRMED");
+            grantCase.setExternalAuditStatus("NO_RESPONSE");
+            grantCase.setExaminationMemo("AI判定結果をもとに確認してください。");
+            grantCase.setNextAction("応募要件と提出書類を確認する");
+            grantCase.setNextActionDueDate(grantMaster.getApplicationDeadline());
+            grantCase.setArchived(false);
+
+            grantCaseMapper.insert(grantCase);
+
+            createRequirementChecks(grantCase.getId());
+        }
 
         EvaluationHistory evaluationHistory = new EvaluationHistory();
         evaluationHistory.setGrantCaseId(grantCase.getId());
@@ -80,6 +106,9 @@ public class AiEvaluationService {
         evaluationHistory.setGrantSnapshot("{\"grantMasterId\":"
                 + request.getGrantMasterId() + "}");
         evaluationHistory.setAiRawResponse("{\"mode\":\"dummy-ai\"}");
+        evaluationHistory.setReviewStatus("UNREVIEWED");
+        evaluationHistory.setReviewMemo(null);
+        evaluationHistory.setReviewedAt(null);
 
         evaluationHistoryMapper.insert(evaluationHistory);
 
@@ -141,15 +170,20 @@ public class AiEvaluationService {
 
         if (grantMaster == null) {
             return "助成金情報が確認できませんでした。";
-
-
         }
 
-        return "助成金テーマ：" + grantMaster.getTargetTheme()
-                + " / 対象事業：" + grantMaster.getTargetProject()
-                + " / 必要書類：" + grantMaster.getRequiredDocuments();
+        return "助成金テーマ：" + safeText(grantMaster.getTargetTheme())
+                + " / 対象事業：" + safeText(grantMaster.getTargetProject())
+                + " / 必要書類：" + safeText(grantMaster.getRequiredDocuments());
+    }
 
+    private String safeText(String value) {
 
+        if (value == null || value.isBlank()) {
+            return "未登録";
+        }
+
+        return value;
     }
 
     private void createRequirementChecks(Long grantCaseId) {

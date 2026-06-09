@@ -1,5 +1,6 @@
 package com.saori.npo.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -35,4 +36,55 @@ public class GrantCaseService {
 
         return grantCaseMapper.findById(id);
     }
+
+    public GrantCase archive(
+            Long id,
+            String archiveReason) {
+
+        if (archiveReason == null || archiveReason.isBlank()) {
+            throw new IllegalArgumentException("アーカイブ理由を入力してください。");
+        }
+
+        GrantCase existingGrantCase = grantCaseMapper.findById(id);
+
+        if (existingGrantCase == null) {
+            throw new IllegalArgumentException("指定された助成金案件が見つかりません。");
+        }
+
+        grantCaseMapper.archiveById(
+                id,
+                archiveReason,
+                LocalDateTime.now());
+
+        return grantCaseMapper.findById(id);
+    }
+
+    public GrantCase complete(
+            Long id,
+            String archiveReason) {
+
+        if (archiveReason == null || archiveReason.isBlank()) {
+            throw new IllegalArgumentException("アーカイブ理由を入力してください。");
+        }
+
+        GrantCase existingGrantCase = grantCaseMapper.findById(id);
+
+        if (existingGrantCase == null) {
+            throw new IllegalArgumentException("指定された助成金案件が見つかりません。");
+        }
+
+        existingGrantCase.setCaseStage("COMPLETED");
+        existingGrantCase.setArchived(true);
+        existingGrantCase.setArchiveReason(archiveReason);
+
+        grantCaseMapper.update(existingGrantCase);
+
+        grantCaseMapper.archiveById(
+                id,
+                archiveReason,
+                LocalDateTime.now());
+
+        return grantCaseMapper.findById(id);
+    }
+
 }

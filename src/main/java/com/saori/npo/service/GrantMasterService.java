@@ -12,7 +12,8 @@ public class GrantMasterService {
 
     private final GrantMasterMapper grantMasterMapper;
 
-    public GrantMasterService(GrantMasterMapper grantMasterMapper) {
+    public GrantMasterService(
+            GrantMasterMapper grantMasterMapper) {
         this.grantMasterMapper = grantMasterMapper;
     }
 
@@ -21,6 +22,26 @@ public class GrantMasterService {
     }
 
     public GrantMaster findById(Long id) {
+        return grantMasterMapper.findById(id);
+    }
+
+    public GrantMaster create(
+            GrantMaster grantMaster) {
+
+        grantMasterMapper.insert(grantMaster);
+
+        return grantMasterMapper.findById(
+                grantMaster.getId());
+    }
+
+    public GrantMaster update(
+            Long id,
+            GrantMaster grantMaster) {
+
+        grantMaster.setId(id);
+
+        grantMasterMapper.update(grantMaster);
+
         return grantMasterMapper.findById(id);
     }
 }

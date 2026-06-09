@@ -30,4 +30,10 @@ public class EvaluationHistory {
     private String aiRawResponse;
 
     private LocalDateTime evaluatedAt;
+
+    private String reviewStatus;
+
+    private String reviewMemo;
+
+    private LocalDateTime reviewedAt;
 }

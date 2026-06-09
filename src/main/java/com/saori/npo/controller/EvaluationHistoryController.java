@@ -1,9 +1,12 @@
 package com.saori.npo.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.saori.npo.domain.EvaluationHistory;
@@ -28,5 +31,16 @@ public class EvaluationHistoryController {
     public EvaluationHistory getEvaluationHistory(
             @PathVariable Long id) {
         return evaluationHistoryService.findById(id);
+    }
+
+    @PutMapping("/api/evaluation-histories/{id}/review-status")
+    public EvaluationHistory updateReviewStatus(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> request) {
+
+        return evaluationHistoryService.updateReviewStatus(
+                id,
+                request.get("reviewStatus"),
+                request.get("reviewMemo"));
     }
 }

@@ -5,56 +5,124 @@
 
 <mapper namespace="com.saori.npo.mapper.GrantMasterMapper">
 
-    <resultMap
-        id="grantMasterResultMap"
-        type="com.saori.npo.domain.GrantMaster">
+	<resultMap id="grantMasterResultMap"
+		type="com.saori.npo.domain.GrantMaster">
 
-        <id property="id" column="id" />
-        <result property="fiscalYear" column="fiscal_year" />
-        <result property="title" column="title" />
-        <result property="provider" column="provider" />
-        <result property="applicationStartDate" column="application_start_date" />
-        <result property="applicationDeadline" column="application_deadline" />
-        <result property="maxGrantAmount" column="max_grant_amount" />
-        <result property="summary" column="summary" />
-        <result property="targetTheme" column="target_theme" />
-        <result property="targetProject" column="target_project" />
-        <result property="targetOrganization" column="target_organization" />
-        <result property="targetArea" column="target_area" />
-        <result property="requiredDocuments" column="required_documents" />
-        <result property="officialUrl" column="official_url" />
-        <result property="officialPdfName" column="official_pdf_name" />
-        <result property="createdAt" column="created_at" />
-        <result property="updatedAt" column="updated_at" />
+		<id property="id" column="id" />
+		<result property="fiscalYear" column="fiscal_year" />
+		<result property="title" column="title" />
+		<result property="provider" column="provider" />
+		<result property="applicationStartDate"
+			column="application_start_date" />
+		<result property="applicationDeadline"
+			column="application_deadline" />
+		<result property="maxGrantAmount" column="max_grant_amount" />
+		<result property="summary" column="summary" />
+		<result property="targetTheme" column="target_theme" />
+		<result property="targetProject" column="target_project" />
+		<result property="targetOrganization"
+			column="target_organization" />
+		<result property="targetArea" column="target_area" />
+		<result property="requiredDocuments"
+			column="required_documents" />
+		<result property="officialUrl" column="official_url" />
+		<result property="officialPdfName" column="official_pdf_name" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
 
-    </resultMap>
+	</resultMap>
 
-    <select
-        id="findAll"
-        resultMap="grantMasterResultMap">
+	<select id="findAll" resultMap="grantMasterResultMap">
 
-        SELECT
-            *
-        FROM
-            grant_masters
-        ORDER BY
-            application_deadline ASC,
-            id ASC
+		SELECT
+		*
+		FROM
+		grant_masters
+		ORDER BY
+		application_deadline ASC,
+		id ASC
 
-    </select>
+	</select>
 
-    <select
-        id="findById"
-        parameterType="long"
-        resultMap="grantMasterResultMap">
+	<select id="findById" parameterType="long"
+		resultMap="grantMasterResultMap">
 
-        SELECT
-            *
-        FROM
-            grant_masters
-        WHERE
-            id = #{id}
+		SELECT
+		*
+		FROM
+		grant_masters
+		WHERE
+		id = #{id}
 
-    </select>
+	</select>
+
+	<insert id="insert"
+		parameterType="com.saori.npo.domain.GrantMaster"
+		useGeneratedKeys="true" keyProperty="id">
+
+		INSERT INTO grant_masters (
+		fiscal_year,
+		title,
+		provider,
+		application_start_date,
+		application_deadline,
+		max_grant_amount,
+		summary,
+		target_theme,
+		target_project,
+		target_organization,
+		target_area,
+		required_documents,
+		official_url,
+		official_pdf_name,
+		created_at,
+		updated_at
+		)
+		VALUES (
+		#{fiscalYear},
+		#{title},
+		#{provider},
+		#{applicationStartDate},
+		#{applicationDeadline},
+		#{maxGrantAmount},
+		#{summary},
+		#{targetTheme},
+		#{targetProject},
+		#{targetOrganization},
+		#{targetArea},
+		#{requiredDocuments},
+		#{officialUrl},
+		#{officialPdfName},
+		NOW(),
+		NOW()
+		)
+
+	</insert>
+
+	<update id="update"
+		parameterType="com.saori.npo.domain.GrantMaster">
+
+		UPDATE
+		grant_masters
+		SET
+		fiscal_year = #{fiscalYear},
+		title = #{title},
+		provider = #{provider},
+		application_start_date = #{applicationStartDate},
+		application_deadline = #{applicationDeadline},
+		max_grant_amount = #{maxGrantAmount},
+		summary = #{summary},
+		target_theme = #{targetTheme},
+		target_project = #{targetProject},
+		target_organization = #{targetOrganization},
+		target_area = #{targetArea},
+		required_documents = #{requiredDocuments},
+		official_url = #{officialUrl},
+		official_pdf_name = #{officialPdfName},
+		updated_at = NOW()
+		WHERE
+		id = #{id}
+
+	</update>
 
 </mapper>

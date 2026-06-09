@@ -13,4 +13,8 @@ public interface GrantMasterMapper {
 
     GrantMaster findById(Long id);
 
+    int insert(GrantMaster grantMaster);
+
+    int update(GrantMaster grantMaster);
+
 }

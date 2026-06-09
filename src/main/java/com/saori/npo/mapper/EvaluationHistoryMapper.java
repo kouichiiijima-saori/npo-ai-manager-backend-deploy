@@ -15,4 +15,6 @@ public interface EvaluationHistoryMapper {
 
     int insert(EvaluationHistory evaluationHistory);
 
+    int update(EvaluationHistory evaluationHistory);
+
 }

@@ -8,4 +8,6 @@ public class AiEvaluationRequest {
     private Long organizationId;
 
     private Long grantMasterId;
+
+    private Long grantCaseId;
 }

@@ -5,86 +5,104 @@
 
 <mapper namespace="com.saori.npo.mapper.EvaluationHistoryMapper">
 
-    <resultMap
-        id="evaluationHistoryResultMap"
-        type="com.saori.npo.domain.EvaluationHistory">
+	<resultMap id="evaluationHistoryResultMap"
+		type="com.saori.npo.domain.EvaluationHistory">
 
-        <id property="id" column="id" />
-        <result property="grantCaseId" column="grant_case_id" />
-        <result property="aiSuitability" column="ai_suitability" />
-        <result property="aiRecommendationLevel" column="ai_recommendation_level" />
-        <result property="aiReason" column="ai_reason" />
-        <result property="aiEvidence" column="ai_evidence" />
-        <result property="organizationSnapshot" column="organization_snapshot" />
-        <result property="charterSnapshot" column="charter_snapshot" />
-        <result property="activitySnapshot" column="activity_snapshot" />
-        <result property="grantSnapshot" column="grant_snapshot" />
-        <result property="aiRawResponse" column="ai_raw_response" />
-        <result property="evaluatedAt" column="evaluated_at" />
+		<id property="id" column="id" />
+		<result property="grantCaseId" column="grant_case_id" />
+		<result property="aiSuitability" column="ai_suitability" />
+		<result property="aiRecommendationLevel"
+			column="ai_recommendation_level" />
+		<result property="aiReason" column="ai_reason" />
+		<result property="aiEvidence" column="ai_evidence" />
+		<result property="organizationSnapshot"
+			column="organization_snapshot" />
+		<result property="charterSnapshot" column="charter_snapshot" />
+		<result property="activitySnapshot" column="activity_snapshot" />
+		<result property="grantSnapshot" column="grant_snapshot" />
+		<result property="aiRawResponse" column="ai_raw_response" />
+		<result property="reviewStatus" column="review_status" />
+		<result property="reviewMemo" column="review_memo" />
+		<result property="reviewedAt" column="reviewed_at" />
+		<result property="evaluatedAt" column="evaluated_at" />
 
-    </resultMap>
+	</resultMap>
 
-    <select
-        id="findAll"
-        resultMap="evaluationHistoryResultMap">
+	<select id="findAll" resultMap="evaluationHistoryResultMap">
 
-        SELECT
-            *
-        FROM
-            evaluation_histories
-        ORDER BY
-            evaluated_at DESC,
-            id DESC
+		SELECT
+		*
+		FROM
+		evaluation_histories
+		ORDER BY
+		evaluated_at DESC,
+		id DESC
 
-    </select>
+	</select>
 
-    <select
-        id="findById"
-        parameterType="long"
-        resultMap="evaluationHistoryResultMap">
+	<select id="findById" parameterType="long"
+		resultMap="evaluationHistoryResultMap">
 
-        SELECT
-            *
-        FROM
-            evaluation_histories
-        WHERE
-            id = #{id}
+		SELECT
+		*
+		FROM
+		evaluation_histories
+		WHERE
+		id = #{id}
 
-    </select>
+	</select>
 
-<insert
-    id="insert"
-    parameterType="com.saori.npo.domain.EvaluationHistory"
-    useGeneratedKeys="true"
-    keyProperty="id">
+	<insert id="insert"
+		parameterType="com.saori.npo.domain.EvaluationHistory"
+		useGeneratedKeys="true" keyProperty="id">
 
-    INSERT INTO evaluation_histories (
-        grant_case_id,
-        ai_suitability,
-        ai_recommendation_level,
-        ai_reason,
-        ai_evidence,
-        organization_snapshot,
-        charter_snapshot,
-        activity_snapshot,
-        grant_snapshot,
-        ai_raw_response,
-        evaluated_at
-    )
-    VALUES (
-        #{grantCaseId},
-        #{aiSuitability},
-        #{aiRecommendationLevel},
-        #{aiReason},
-        #{aiEvidence},
-        #{organizationSnapshot},
-        #{charterSnapshot},
-        #{activitySnapshot},
-        #{grantSnapshot},
-        #{aiRawResponse},
-        NOW()
-    )
+		INSERT INTO evaluation_histories (
+		grant_case_id,
+		ai_suitability,
+		ai_recommendation_level,
+		ai_reason,
+		ai_evidence,
+		organization_snapshot,
+		charter_snapshot,
+		activity_snapshot,
+		grant_snapshot,
+		ai_raw_response,
+		review_status,
+		review_memo,
+		reviewed_at,
+		evaluated_at
+		)
+		VALUES (
+		#{grantCaseId},
+		#{aiSuitability},
+		#{aiRecommendationLevel},
+		#{aiReason},
+		#{aiEvidence},
+		#{organizationSnapshot},
+		#{charterSnapshot},
+		#{activitySnapshot},
+		#{grantSnapshot},
+		#{aiRawResponse},
+		#{reviewStatus},
+		#{reviewMemo},
+		#{reviewedAt},
+		NOW()
+		)
 
-</insert>
+	</insert>
+
+	<update id="update"
+		parameterType="com.saori.npo.domain.EvaluationHistory">
+
+		UPDATE
+		evaluation_histories
+		SET
+		review_status = #{reviewStatus},
+		review_memo = #{reviewMemo},
+		reviewed_at = #{reviewedAt}
+		WHERE
+		id = #{id}
+
+	</update>
 
 </mapper>

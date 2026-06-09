@@ -3,12 +3,14 @@ package com.saori.npo.controller;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.saori.npo.domain.GrantCase;
+import com.saori.npo.dto.GrantCaseArchiveRequest;
 import com.saori.npo.service.GrantCaseService;
 
 @RestController
@@ -39,4 +41,25 @@ public class GrantCaseController {
 
         return grantCaseService.update(id, grantCase);
     }
+
+    @PatchMapping("/api/grant-cases/{id}/archive")
+    public GrantCase archiveGrantCase(
+            @PathVariable Long id,
+            @RequestBody GrantCaseArchiveRequest request) {
+
+        return grantCaseService.archive(
+                id,
+                request.getArchiveReason());
+    }
+
+    @PatchMapping("/api/grant-cases/{id}/complete")
+    public GrantCase completeGrantCase(
+            @PathVariable Long id,
+            @RequestBody GrantCaseArchiveRequest request) {
+
+        return grantCaseService.complete(
+                id,
+                request.getArchiveReason());
+    }
+
 }

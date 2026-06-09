@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/npo_ai_manager?useSSL=false&serverTimezone=Asia/Tokyo&characterEncoding=UTF-8
-    username: root
-    password:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/npo_ai_manager?useSSL=false&serverTimezone=Asia/Tokyo&characterEncoding=UTF-8}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 mybatis:
@@ -12,3 +12,8 @@ mybatis:
 logging:
   level:
     com.saori.npo.mapper: debug
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY:}
+    model: gemini-2.5-flash
