@@ -5,97 +5,101 @@
 
 <mapper namespace="com.saori.npo.mapper.CharterArticleMapper">
 
-    <resultMap
-        id="charterArticleResultMap"
-        type="com.saori.npo.domain.CharterArticle">
+	<resultMap id="charterArticleResultMap"
+		type="com.saori.npo.domain.CharterArticle">
 
-        <id property="id" column="id" />
-        <result property="organizationId" column="organization_id" />
-        <result property="articleNumber" column="article_number" />
-        <result property="title" column="title" />
-        <result property="content" column="content" />
-        <result property="createdAt" column="created_at" />
-        <result property="updatedAt" column="updated_at" />
+		<id property="id" column="id" />
+		<result property="organizationId" column="organization_id" />
+		<result property="articleNumber" column="article_number" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
 
-    </resultMap>
+	</resultMap>
 
-    <select
-        id="findAll"
-        resultMap="charterArticleResultMap">
+	<select id="findAll" resultMap="charterArticleResultMap">
 
-        SELECT
-            *
-        FROM
-            charter_articles
-        ORDER BY
-            article_number ASC
+		SELECT
+		*
+		FROM
+		charter_articles
+		ORDER BY
+		article_number ASC
 
-    </select>
+	</select>
 
-    <select
-        id="findById"
-        parameterType="long"
-        resultMap="charterArticleResultMap">
+	<select id="findByOrganizationId" parameterType="long"
+		resultMap="charterArticleResultMap">
 
-        SELECT
-            *
-        FROM
-            charter_articles
-        WHERE
-            id = #{id}
+		SELECT
+		*
+		FROM
+		charter_articles
+		WHERE
+		organization_id = #{organizationId}
+		ORDER BY
+		article_number ASC
 
-    </select>
+	</select>
 
-    <insert
-        id="insert"
-        parameterType="com.saori.npo.domain.CharterArticle"
-        useGeneratedKeys="true"
-        keyProperty="id">
+	<select id="findById" parameterType="long"
+		resultMap="charterArticleResultMap">
 
-        INSERT INTO charter_articles (
-            organization_id,
-            article_number,
-            title,
-            content,
-            created_at,
-            updated_at
-        )
-        VALUES (
-            #{organizationId},
-            #{articleNumber},
-            #{title},
-            #{content},
-            NOW(),
-            NOW()
-        )
+		SELECT
+		*
+		FROM
+		charter_articles
+		WHERE
+		id = #{id}
 
-    </insert>
+	</select>
 
-    <update
-        id="update"
-        parameterType="com.saori.npo.domain.CharterArticle">
+	<insert id="insert"
+		parameterType="com.saori.npo.domain.CharterArticle"
+		useGeneratedKeys="true" keyProperty="id">
 
-        UPDATE
-            charter_articles
-        SET
-            article_number = #{articleNumber},
-            title = #{title},
-            content = #{content},
-            updated_at = NOW()
-        WHERE
-            id = #{id}
+		INSERT INTO charter_articles (
+		organization_id,
+		article_number,
+		title,
+		content,
+		created_at,
+		updated_at
+		)
+		VALUES (
+		#{organizationId},
+		#{articleNumber},
+		#{title},
+		#{content},
+		NOW(),
+		NOW()
+		)
 
-    </update>
+	</insert>
 
-    <delete
-        id="deleteById"
-        parameterType="long">
+	<update id="update"
+		parameterType="com.saori.npo.domain.CharterArticle">
 
-        DELETE FROM
-            charter_articles
-        WHERE
-            id = #{id}
+		UPDATE
+		charter_articles
+		SET
+		article_number = #{articleNumber},
+		title = #{title},
+		content = #{content},
+		updated_at = NOW()
+		WHERE
+		id = #{id}
 
-    </delete>
+	</update>
+
+	<delete id="deleteById" parameterType="long">
+
+		DELETE FROM
+		charter_articles
+		WHERE
+		id = #{id}
+
+	</delete>
 
 </mapper>

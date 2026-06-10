@@ -11,6 +11,8 @@ public interface CharterArticleMapper {
 
     List<CharterArticle> findAll();
 
+    List<CharterArticle> findByOrganizationId(Long organizationId);
+
     CharterArticle findById(Long id);
 
     int insert(CharterArticle charterArticle);
@@ -18,5 +20,4 @@ public interface CharterArticleMapper {
     int update(CharterArticle charterArticle);
 
     int deleteById(Long id);
-
 }

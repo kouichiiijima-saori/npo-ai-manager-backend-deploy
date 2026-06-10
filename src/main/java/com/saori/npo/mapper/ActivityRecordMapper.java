@@ -11,6 +11,8 @@ public interface ActivityRecordMapper {
 
     List<ActivityRecord> findAll();
 
+    List<ActivityRecord> findByOrganizationId(Long organizationId);
+
     ActivityRecord findById(Long id);
 
     int insert(ActivityRecord activityRecord);

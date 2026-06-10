@@ -5,106 +5,111 @@
 
 <mapper namespace="com.saori.npo.mapper.ActivityRecordMapper">
 
-    <resultMap
-        id="activityRecordResultMap"
-        type="com.saori.npo.domain.ActivityRecord">
+	<resultMap id="activityRecordResultMap"
+		type="com.saori.npo.domain.ActivityRecord">
 
-        <id property="id" column="id" />
-        <result property="organizationId" column="organization_id" />
-        <result property="fiscalYear" column="fiscal_year" />
-        <result property="projectName" column="project_name" />
-        <result property="content" column="content" />
-        <result property="result" column="result" />
-        <result property="reportFileName" column="report_file_name" />
-        <result property="createdAt" column="created_at" />
-        <result property="updatedAt" column="updated_at" />
+		<id property="id" column="id" />
+		<result property="organizationId" column="organization_id" />
+		<result property="fiscalYear" column="fiscal_year" />
+		<result property="projectName" column="project_name" />
+		<result property="content" column="content" />
+		<result property="result" column="result" />
+		<result property="reportFileName" column="report_file_name" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
 
-    </resultMap>
+	</resultMap>
 
-    <select
-        id="findAll"
-        resultMap="activityRecordResultMap">
+	<select id="findAll" resultMap="activityRecordResultMap">
 
-        SELECT
-            *
-        FROM
-            activity_records
-        ORDER BY
-            fiscal_year DESC,
-            project_name ASC
+		SELECT
+		*
+		FROM
+		activity_records
+		ORDER BY
+		fiscal_year DESC,
+		project_name ASC
 
-    </select>
+	</select>
 
-    <select
-        id="findById"
-        parameterType="long"
-        resultMap="activityRecordResultMap">
+	<select id="findByOrganizationId" parameterType="long"
+		resultMap="activityRecordResultMap">
 
-        SELECT
-            *
-        FROM
-            activity_records
-        WHERE
-            id = #{id}
+		SELECT
+		*
+		FROM
+		activity_records
+		WHERE
+		organization_id = #{organizationId}
+		ORDER BY
+		fiscal_year DESC,
+		project_name ASC
 
-    </select>
+	</select>
 
-    <insert
-        id="insert"
-        parameterType="com.saori.npo.domain.ActivityRecord"
-        useGeneratedKeys="true"
-        keyProperty="id">
+	<select id="findById" parameterType="long"
+		resultMap="activityRecordResultMap">
 
-        INSERT INTO activity_records (
-            organization_id,
-            fiscal_year,
-            project_name,
-            content,
-            result,
-            report_file_name,
-            created_at,
-            updated_at
-        )
-        VALUES (
-            #{organizationId},
-            #{fiscalYear},
-            #{projectName},
-            #{content},
-            #{result},
-            #{reportFileName},
-            NOW(),
-            NOW()
-        )
+		SELECT
+		*
+		FROM
+		activity_records
+		WHERE
+		id = #{id}
 
-    </insert>
+	</select>
 
-    <update
-        id="update"
-        parameterType="com.saori.npo.domain.ActivityRecord">
+	<insert id="insert"
+		parameterType="com.saori.npo.domain.ActivityRecord"
+		useGeneratedKeys="true" keyProperty="id">
 
-        UPDATE
-            activity_records
-        SET
-            fiscal_year = #{fiscalYear},
-            project_name = #{projectName},
-            content = #{content},
-            result = #{result},
-            report_file_name = #{reportFileName},
-            updated_at = NOW()
-        WHERE
-            id = #{id}
+		INSERT INTO activity_records (
+		organization_id,
+		fiscal_year,
+		project_name,
+		content,
+		result,
+		report_file_name,
+		created_at,
+		updated_at
+		)
+		VALUES (
+		#{organizationId},
+		#{fiscalYear},
+		#{projectName},
+		#{content},
+		#{result},
+		#{reportFileName},
+		NOW(),
+		NOW()
+		)
 
-    </update>
+	</insert>
 
-    <delete
-        id="deleteById"
-        parameterType="long">
+	<update id="update"
+		parameterType="com.saori.npo.domain.ActivityRecord">
 
-        DELETE FROM
-            activity_records
-        WHERE
-            id = #{id}
+		UPDATE
+		activity_records
+		SET
+		fiscal_year = #{fiscalYear},
+		project_name = #{projectName},
+		content = #{content},
+		result = #{result},
+		report_file_name = #{reportFileName},
+		updated_at = NOW()
+		WHERE
+		id = #{id}
 
-    </delete>
+	</update>
+
+	<delete id="deleteById" parameterType="long">
+
+		DELETE FROM
+		activity_records
+		WHERE
+		id = #{id}
+
+	</delete>
 
 </mapper>
