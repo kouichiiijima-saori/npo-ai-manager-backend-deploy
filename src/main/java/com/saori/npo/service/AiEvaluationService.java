@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import com.saori.npo.client.AiEvaluationClient;
 import com.saori.npo.domain.ActivityRecord;
@@ -98,14 +100,44 @@ public class AiEvaluationService {
 		    System.out.println("AI API failed. Fallback to dummy AI.");
 		    e.printStackTrace();
 
-		    String message = e.getMessage();
+		    Throwable rootCause = e;
 
-		    if (message != null && message.contains("429")) {
+		    while (rootCause.getCause() != null) {
+		        rootCause = rootCause.getCause();
+		    }
+
+		    System.out.println("ROOT CAUSE CLASS : "
+		            + rootCause.getClass().getName());
+
+		    System.out.println("ROOT CAUSE MESSAGE : "
+		            + rootCause.getMessage());
+
+		    if (e instanceof HttpClientErrorException.TooManyRequests
+		            || rootCause instanceof HttpClientErrorException.TooManyRequests) {
+
 		        aiRawResponseMode = "dummy-fallback-429";
-		    } else if (message != null && message.contains("503")) {
+
+		    } else if (e instanceof HttpServerErrorException.ServiceUnavailable
+		            || rootCause instanceof HttpServerErrorException.ServiceUnavailable) {
+
 		        aiRawResponseMode = "dummy-fallback-503";
+
 		    } else {
-		        aiRawResponseMode = "dummy-fallback-error";
+
+		        String rootMessage = rootCause.getMessage();
+
+		        if (rootMessage != null && rootMessage.contains("429")) {
+
+		            aiRawResponseMode = "dummy-fallback-429";
+
+		        } else if (rootMessage != null && rootMessage.contains("503")) {
+
+		            aiRawResponseMode = "dummy-fallback-503";
+
+		        } else {
+
+		            aiRawResponseMode = "dummy-fallback-error";
+		        }
 		    }
 		}
 
@@ -177,7 +209,9 @@ public class AiEvaluationService {
 
 			grantCaseMapper.insert(grantCase);
 
-			createRequirementChecks(grantCase.getId());
+			createRequirementChecks(
+					grantCase.getId(),
+					aiResult);
 		}
 
 		EvaluationHistory evaluationHistory = new EvaluationHistory();
@@ -186,6 +220,10 @@ public class AiEvaluationService {
 		evaluationHistory.setAiRecommendationLevel(aiRecommendationLevel);
 		evaluationHistory.setAiReason(aiReason);
 		evaluationHistory.setAiEvidence(aiEvidence);
+		evaluationHistory.setAdditionalChecks(
+				aiResult != null && aiResult.getAdditionalChecks() != null
+						? String.join("\n", aiResult.getAdditionalChecks())
+						: null);
 		evaluationHistory.setOrganizationSnapshot(
 				buildOrganizationSnapshot(organizationProfile));
 		evaluationHistory.setCharterSnapshot(
@@ -517,7 +555,9 @@ public class AiEvaluationService {
 				.replace("\"", "\\\"");
 	}
 
-	private void createRequirementChecks(Long grantCaseId) {
+	private void createRequirementChecks(
+			Long grantCaseId,
+			AiEvaluationResult aiResult) {
 
 		createRequirementCheck(
 				grantCaseId,
@@ -539,6 +579,19 @@ public class AiEvaluationService {
 				"2025_activity_report.pdf",
 				"UNCHECKED",
 				"AI判定により確認項目として追加");
+
+		if (aiResult != null && aiResult.getAdditionalChecks() != null) {
+
+			for (String additionalCheck : aiResult.getAdditionalChecks()) {
+
+				createRequirementCheck(
+						grantCaseId,
+						additionalCheck,
+						null,
+						"UNCHECKED",
+						"AI判定により追加された確認事項");
+			}
+		}
 	}
 
 	private void createRequirementCheck(

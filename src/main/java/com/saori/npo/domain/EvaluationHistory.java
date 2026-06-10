@@ -7,33 +7,35 @@ import lombok.Data;
 @Data
 public class EvaluationHistory {
 
-    private Long id;
+	private Long id;
 
-    private Long grantCaseId;
+	private Long grantCaseId;
 
-    private String aiSuitability;
+	private String aiSuitability;
 
-    private String aiRecommendationLevel;
+	private String aiRecommendationLevel;
 
-    private String aiReason;
+	private String aiReason;
 
-    private String aiEvidence;
+	private String aiEvidence;
 
-    private String organizationSnapshot;
+	private String organizationSnapshot;
 
-    private String charterSnapshot;
+	private String charterSnapshot;
 
-    private String activitySnapshot;
+	private String activitySnapshot;
 
-    private String grantSnapshot;
+	private String grantSnapshot;
 
-    private String aiRawResponse;
+	private String aiRawResponse;
 
-    private LocalDateTime evaluatedAt;
+	private LocalDateTime evaluatedAt;
 
-    private String reviewStatus;
+	private String reviewStatus;
 
-    private String reviewMemo;
+	private String reviewMemo;
 
-    private LocalDateTime reviewedAt;
+	private LocalDateTime reviewedAt;
+
+	private String additionalChecks;
 }

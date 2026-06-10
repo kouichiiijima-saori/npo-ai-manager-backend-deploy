@@ -15,6 +15,7 @@
 			column="ai_recommendation_level" />
 		<result property="aiReason" column="ai_reason" />
 		<result property="aiEvidence" column="ai_evidence" />
+		<result property="additionalChecks" column="additional_checks" />
 		<result property="organizationSnapshot"
 			column="organization_snapshot" />
 		<result property="charterSnapshot" column="charter_snapshot" />
@@ -62,6 +63,7 @@
 		ai_recommendation_level,
 		ai_reason,
 		ai_evidence,
+		additional_checks,
 		organization_snapshot,
 		charter_snapshot,
 		activity_snapshot,
@@ -78,6 +80,7 @@
 		#{aiRecommendationLevel},
 		#{aiReason},
 		#{aiEvidence},
+		#{additionalChecks},
 		#{organizationSnapshot},
 		#{charterSnapshot},
 		#{activitySnapshot},
@@ -97,9 +100,11 @@
 		UPDATE
 		evaluation_histories
 		SET
-		review_status = #{reviewStatus},
+		review_status =
+		#{reviewStatus},
 		review_memo = #{reviewMemo},
-		reviewed_at = #{reviewedAt}
+		reviewed_at =
+		#{reviewedAt}
 		WHERE
 		id = #{id}
 

@@ -63,19 +63,28 @@ public class GeminiAiEvaluationClient implements AiEvaluationClient {
 			try {
 				return sendPrompt(prompt);
 			} catch (RuntimeException e) {
-			    lastException = e;
+				lastException = e;
 
-			    if (e instanceof HttpClientErrorException.TooManyRequests) {
-			        System.out.println("Gemini API quota exceeded. No retry.");
-			        throw e;
-			    }
+				if (e instanceof HttpClientErrorException.TooManyRequests) {
+					System.out.println("Gemini API quota exceeded. No retry.");
+					throw e;
+				}
 
-			    System.out.println("Gemini API retry attempt failed: " + attempt);
-			    System.out.println(e.getMessage());
+				System.out.println("Gemini API retry attempt failed: " + attempt);
+				System.out.println(e.getMessage());
 
-			    if (attempt < 3) {
-			        sleep(attempt * 1000L);
-			    }
+				if (attempt < 3) {
+
+					long waitMillis = (long) Math.pow(2, attempt - 1) * 6000L;
+
+					System.out.println(
+							"Gemini API retry after "
+									+ (waitMillis / 1000)
+									+ " sec. attempt="
+									+ attempt);
+
+					sleep(waitMillis);
+				}
 			}
 		}
 
