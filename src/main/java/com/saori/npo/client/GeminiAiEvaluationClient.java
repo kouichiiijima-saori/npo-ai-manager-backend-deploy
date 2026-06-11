@@ -4,29 +4,27 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import com.saori.npo.config.GeminiProperties;
 import com.saori.npo.dto.AiEvaluationResult;
 
-import tools.jackson.databind.ObjectMapper;
-
 @Component
 public class GeminiAiEvaluationClient implements AiEvaluationClient {
 
 	private final GeminiProperties geminiProperties;
-
 	private final RestClient restClient;
-
-	private final ObjectMapper objectMapper;
+	private final AiEvaluationResponseParser aiEvaluationResponseParser;
+	private final AiRetryExecutor aiRetryExecutor;
 
 	public GeminiAiEvaluationClient(
 			GeminiProperties geminiProperties,
-			ObjectMapper objectMapper) {
+			AiEvaluationResponseParser aiEvaluationResponseParser,
+			AiRetryExecutor aiRetryExecutor) {
 
 		this.geminiProperties = geminiProperties;
-		this.objectMapper = objectMapper;
+		this.aiEvaluationResponseParser = aiEvaluationResponseParser;
+		this.aiRetryExecutor = aiRetryExecutor;
 		this.restClient = RestClient.builder()
 				.baseUrl("https://generativelanguage.googleapis.com")
 				.build();
@@ -36,13 +34,11 @@ public class GeminiAiEvaluationClient implements AiEvaluationClient {
 	public AiEvaluationResult evaluate(String prompt) {
 
 		try {
-			String responseText = sendPromptWithRetry(prompt);
-			String extractedText = extractTextFromResponse(responseText);
-			String jsonText = cleanJsonText(extractedText);
+			String responseText =
+					aiRetryExecutor.execute(
+							() -> sendPrompt(prompt));
 
-			return objectMapper.readValue(
-					jsonText,
-					AiEvaluationResult.class);
+			return aiEvaluationResponseParser.parse(responseText);
 
 		} catch (Exception e) {
 			throw new IllegalStateException(
@@ -52,52 +48,8 @@ public class GeminiAiEvaluationClient implements AiEvaluationClient {
 	}
 
 	public String sendHello() {
-		return sendPromptWithRetry("こんにちは。短く返事してください。");
-	}
-
-	private String sendPromptWithRetry(String prompt) {
-
-		RuntimeException lastException = null;
-
-		for (int attempt = 1; attempt <= 3; attempt++) {
-			try {
-				return sendPrompt(prompt);
-			} catch (RuntimeException e) {
-				lastException = e;
-
-				if (e instanceof HttpClientErrorException.TooManyRequests) {
-					System.out.println("Gemini API quota exceeded. No retry.");
-					throw e;
-				}
-
-				System.out.println("Gemini API retry attempt failed: " + attempt);
-				System.out.println(e.getMessage());
-
-				if (attempt < 3) {
-
-					long waitMillis = (long) Math.pow(2, attempt - 1) * 6000L;
-
-					System.out.println(
-							"Gemini API retry after "
-									+ (waitMillis / 1000)
-									+ " sec. attempt="
-									+ attempt);
-
-					sleep(waitMillis);
-				}
-			}
-		}
-
-		throw lastException;
-	}
-
-	private void sleep(long millis) {
-
-		try {
-			Thread.sleep(millis);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
+		return aiRetryExecutor.execute(
+				() -> sendPrompt("こんにちは。短く返事してください。"));
 	}
 
 	private String sendPrompt(String prompt) {
@@ -122,29 +74,4 @@ public class GeminiAiEvaluationClient implements AiEvaluationClient {
 		return response.toString();
 	}
 
-	private String extractTextFromResponse(String responseText) {
-
-		int textStart = responseText.indexOf("text=");
-
-		if (textStart == -1) {
-			return responseText;
-		}
-
-		int start = textStart + "text=".length();
-		int end = responseText.indexOf("}], role=model", start);
-
-		if (end == -1) {
-			return responseText.substring(start);
-		}
-
-		return responseText.substring(start, end);
-	}
-
-	private String cleanJsonText(String text) {
-
-		return text
-				.replace("```json", "")
-				.replace("```", "")
-				.trim();
-	}
 }
