@@ -102,48 +102,10 @@ public class AiEvaluationService {
 
 		} catch (Exception e) {
 
-		    System.out.println("AI API failed. Fallback to dummy AI.");
-		    e.printStackTrace();
+			System.out.println("AI API failed. Fallback to dummy AI.");
+			e.printStackTrace();
 
-		    Throwable rootCause = e;
-
-		    while (rootCause.getCause() != null) {
-		        rootCause = rootCause.getCause();
-		    }
-
-		    System.out.println("ROOT CAUSE CLASS : "
-		            + rootCause.getClass().getName());
-
-		    System.out.println("ROOT CAUSE MESSAGE : "
-		            + rootCause.getMessage());
-
-		    if (e instanceof HttpClientErrorException.TooManyRequests
-		            || rootCause instanceof HttpClientErrorException.TooManyRequests) {
-
-		        aiRawResponseMode = "dummy-fallback-429";
-
-		    } else if (e instanceof HttpServerErrorException.ServiceUnavailable
-		            || rootCause instanceof HttpServerErrorException.ServiceUnavailable) {
-
-		        aiRawResponseMode = "dummy-fallback-503";
-
-		    } else {
-
-		        String rootMessage = rootCause.getMessage();
-
-		        if (rootMessage != null && rootMessage.contains("429")) {
-
-		            aiRawResponseMode = "dummy-fallback-429";
-
-		        } else if (rootMessage != null && rootMessage.contains("503")) {
-
-		            aiRawResponseMode = "dummy-fallback-503";
-
-		        } else {
-
-		            aiRawResponseMode = "dummy-fallback-error";
-		        }
-		    }
+			aiRawResponseMode = resolveAiRawResponseMode(e);
 		}
 
 		String aiSuitability;
@@ -262,6 +224,37 @@ public class AiEvaluationService {
 		response.setExternalAuditStatus(grantCase.getExternalAuditStatus());
 
 		return response;
+	}
+
+	private String resolveAiRawResponseMode(Exception e) {
+
+		Throwable rootCause = e;
+
+		while (rootCause.getCause() != null) {
+			rootCause = rootCause.getCause();
+		}
+
+		if (e instanceof HttpClientErrorException.TooManyRequests
+				|| rootCause instanceof HttpClientErrorException.TooManyRequests) {
+			return "dummy-fallback-429";
+		}
+
+		if (e instanceof HttpServerErrorException.ServiceUnavailable
+				|| rootCause instanceof HttpServerErrorException.ServiceUnavailable) {
+			return "dummy-fallback-503";
+		}
+
+		String rootMessage = rootCause.getMessage();
+
+		if (rootMessage != null && rootMessage.contains("429")) {
+			return "dummy-fallback-429";
+		}
+
+		if (rootMessage != null && rootMessage.contains("503")) {
+			return "dummy-fallback-503";
+		}
+
+		return "dummy-fallback-error";
 	}
 
 	private String safeText(String value) {

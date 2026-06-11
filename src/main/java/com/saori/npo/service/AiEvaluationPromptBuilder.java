@@ -20,6 +20,17 @@ public class AiEvaluationPromptBuilder {
 
 		StringBuilder prompt = new StringBuilder();
 
+		appendInstruction(prompt);
+		appendOrganizationProfile(prompt, organizationProfile);
+		appendCharterArticles(prompt, charterArticles);
+		appendActivityRecords(prompt, activityRecords);
+		appendGrantMaster(prompt, grantMaster);
+
+		return prompt.toString();
+	}
+
+	private void appendInstruction(StringBuilder prompt) {
+
 		prompt.append("""
 				あなたはNPO法人の助成金適合性を判定するAIです。
 				最終判断は人間が行います。あなたは、団体情報・定款・活動実績・助成金情報を根拠に、応募検討のための参考判定を行ってください。
@@ -27,19 +38,6 @@ public class AiEvaluationPromptBuilder {
 				必ず有効なJSONのみを返してください。
 				説明文、Markdown、コードブロックは不要です。
 				JSONのキーは必ずダブルクォートで囲ってください。
-
-				suitability は "SUITABLE", "NEEDS_CONFIRMATION", "NOT_SUITABLE" のいずれか。
-				recommendationLevel は "A", "B", "C" のいずれか。
-
-				判定基準:
-				- SUITABLE: 団体目的、活動実績、助成対象事業が明確に一致している
-				- NEEDS_CONFIRMATION: 一部一致しているが、対象経費・対象地域・応募資格・実施体制など追加確認が必要
-				- NOT_SUITABLE: 団体目的や活動実績と助成対象が大きく異なる
-
-				注意：
-				団体活動と助成金テーマが一部でも似ているだけで SUITABLE にしないでください。
-				実際の活動実績・定款目的・対象地域・対象団体・必要書類が複数一致する場合のみ SUITABLE としてください。
-				関連性が弱い場合は NOT_SUITABLE、判断材料が不足する場合は NEEDS_CONFIRMATION としてください。
 
 				出力形式:
 				{
@@ -53,31 +51,77 @@ public class AiEvaluationPromptBuilder {
 				  ]
 				}
 
-				【団体情報】
+				suitability は必ず以下のいずれか:
+				- SUITABLE
+				- NEEDS_CONFIRMATION
+				- NOT_SUITABLE
+
+				recommendationLevel は必ず以下のいずれか:
+				- A
+				- B
+				- C
+
+				【判定の優先順位】
+				次の順番で確認してください。
+
+				1. 対象団体
+				助成金の対象団体に、NPO法人・非営利法人・地域団体などが含まれるか。
+
+				2. 対象地域
+				団体の所在地・活動地域が、助成金の対象地域と一致または許容範囲内か。
+
+				3. 対象事業
+				助成金の対象事業と、団体の主な活動・活動実績が一致しているか。
+
+				4. 定款目的
+				定款に記載された目的・事業内容と、助成金テーマが整合しているか。
+
+				5. 活動実績
+				過去の活動実績が、助成対象事業を実施できる根拠になるか。
+
+				6. 必要書類
+				必要書類が多い場合、追加確認事項として明記する。
+
+				【suitability 判定基準】
+
+				SUITABLE:
+				対象団体・対象地域・対象事業・定款目的・活動実績のうち、複数が明確に一致している。
+				特に対象事業と活動実績が一致している場合は高く評価する。
+				ただし、テーマが似ているだけでは SUITABLE にしない。
+
+				NEEDS_CONFIRMATION:
+				一部は一致しているが、対象経費、応募資格、実施体制、対象地域、必要書類などに確認不足がある。
+				判断材料が不足している場合も NEEDS_CONFIRMATION とする。
+
+				NOT_SUITABLE:
+				対象団体、対象地域、対象事業、活動実績のいずれかに大きな不一致がある。
+				団体活動と助成金テーマの関連性が弱い場合も NOT_SUITABLE とする。
+
+				【recommendationLevel 判定基準】
+
+				A:
+				SUITABLE かつ根拠が複数あり、応募準備に進む価値が高い。
+
+				B:
+				NEEDS_CONFIRMATION または、SUITABLE だが確認事項が残る。
+
+				C:
+				NOT_SUITABLE または、応募優先度が低い。
+
+				【出力ルール】
+				reason には、なぜその判定になったかを2〜4文で書く。
+				evidence には、団体情報・定款・活動実績・助成金情報のどれを根拠にしたかを書く。
+				additionalChecks には、人間が次に確認すべき事項を3〜5個入れる。
+				根拠が不足している場合は、不足している情報を additionalChecks に入れる。
+
 				""");
-
-		appendOrganizationProfile(
-				prompt,
-				organizationProfile);
-
-		appendCharterArticles(
-				prompt,
-				charterArticles);
-
-		appendActivityRecords(
-				prompt,
-				activityRecords);
-
-		appendGrantMaster(
-				prompt,
-				grantMaster);
-
-		return prompt.toString();
 	}
 
 	private void appendOrganizationProfile(
 			StringBuilder prompt,
 			OrganizationProfile organizationProfile) {
+
+		prompt.append("\n【団体情報】\n");
 
 		if (organizationProfile == null) {
 			prompt.append("団体情報: 未登録\n");
