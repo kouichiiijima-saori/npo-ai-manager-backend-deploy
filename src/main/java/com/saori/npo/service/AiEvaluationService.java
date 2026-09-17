@@ -1,11 +1,14 @@
 package com.saori.npo.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.saori.npo.client.AiEvaluationClient;
 import com.saori.npo.domain.ActivityRecord;
@@ -76,6 +79,19 @@ public class AiEvaluationService {
 
 		GrantMaster grantMaster = grantMasterMapper.findById(
 				request.getGrantMasterId());
+
+		if (grantMaster == null) {
+			throw new ResponseStatusException(
+					HttpStatus.NOT_FOUND,
+					"指定された助成金公募が見つかりません。");
+		}
+
+		if (grantMaster.getApplicationDeadline() != null
+				&& grantMaster.getApplicationDeadline().isBefore(LocalDate.now())) {
+			throw new ResponseStatusException(
+					HttpStatus.BAD_REQUEST,
+					"募集期限を過ぎた助成金公募はAI判定できません。");
+		}
 
 		OrganizationProfile organizationProfile = organizationProfileMapper.findById(
 				request.getOrganizationId());
